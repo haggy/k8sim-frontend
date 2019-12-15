@@ -1,0 +1,13 @@
+<mat-grid-list cols="12">
+  <mat-grid-tile [colspan]="12">
+    <mat-grid-tile-header>{{ simulationId ? 'Simulation (' + simulationId + ')' : 'Creating Simulation...'}}</mat-grid-tile-header>
+  </mat-grid-tile>
+  <mat-grid-tile 
+    *ngFor="let workload of workloads"
+    [colspan]="6">
+    <mat-card>
+      <mat-card-header>Workload ({{ workload.id }})</mat-card-header>
+      <mat-card-content>Running workload...</mat-card-content>
+    </mat-card>
+  </mat-grid-tile>
+</mat-grid-list>
