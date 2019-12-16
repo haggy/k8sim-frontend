@@ -32,45 +32,77 @@ export class SimulationService {
       req
     );
   }
+
+  stopWorkload(simId: string, podId: string, workloadId: string): Observable<void> {
+    return this.http.delete<void>(
+      `${this.baseUrl}/simulation/${simId}/pod/${podId}/workload/${workloadId}`
+    );
+  }
+
+  getAllStats(simId: string): Observable<AllStatsResp> {
+    return this.http.get<AllStatsResp>(`${this.baseUrl}/simulation/${simId}/stats`);
+  }
 }
 
+export type SimMeta = { id: string };
+export type PodMeta = { id: string };
+export type WorkloadMeta = { id: string };
+export type PodConfig = {
+  subsystemManagerConfig: {
+   disk: {
+     processingFrequency: {
+       perTick: number,
+       tickSleepDuration: string
+     },
+     requestCapacity: number,
+     costs: {
+       read: number,
+       write: number
+     }
+   }
+  },
+  workload: {
+   tickInterval: string
+  }
+};
+
 export class NewSimulationReq {
-  constructor(public placeholder?: string) {}
+  constructor() {}
 }
 export class NewSimulationResp {
-  constructor(public meta: SimulationMeta) {}
-}
-export class SimulationMeta {
-  constructor(public id: string) {}
+  constructor(public meta: SimMeta) {}
 }
 
 export class NewPodReq {
- constructor(public pod: {
-   subsystemManagerConfig: {
-    disk: {
-      processingFrequency: {
-        perTick: number,
-        tickSleepDuration: string
-      },
-      requestCapacity: number,
-      costs: {
-        read: number,
-        write: number
-      }
-    }
-   },
-   workload: {
-    tickInterval: string
-   }
- }) {}
+ constructor(public pod: PodConfig) {}
 }
+
 export class NewPodResp {
-  constructor(public meta: { id: string }) {}
+  constructor(public meta: PodMeta) {}
 }
 
 export class NewWorkloadReq {
   constructor(public workload: {}) {}
 }
 export class NewWorkloadResp {
-  constructor(public meta: { id: string }) {}
+  constructor(public meta: WorkloadMeta) {}
+}
+
+export class StorageStats {
+  constructor(
+    public total: number, 
+    public readSuccess: number, 
+    public readFailure: number, 
+    public writeSuccess: number, 
+    public writeFailure: number
+  ) {}
+}
+export class StatsForComponent {
+  constructor(public storage: StorageStats) {}
+}
+export class StatsEntry {
+  constructor(public id: string, public stats: StatsForComponent) {}
+}
+export class AllStatsResp {
+  constructor(public stats: StatsEntry[]) {}
 }

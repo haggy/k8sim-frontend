@@ -11,8 +11,10 @@ import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { MatGridListModule } from '@angular/material/grid-list';
 import {MatCardModule} from '@angular/material/card';
 import {MatMenuModule} from '@angular/material/menu';
-import {MatToolbarModule} from '@angular/material/toolbar';
-import {MatListModule} from '@angular/material/list';
+import {MatToolbarModule, MatTabsModule, MatInputModule} from '@angular/material';
+import {MatListModule} from '@angular/material';
+import { MatSliderModule } from '@angular/material';
+import {MatSidenavModule, MatButtonModule, MatFormFieldModule} from '@angular/material';
 
 @NgModule({
   declarations: [
@@ -28,6 +30,12 @@ import {MatListModule} from '@angular/material/list';
     MatMenuModule,
     MatToolbarModule,
     MatListModule,
+    MatSliderModule,
+    MatSidenavModule,
+    MatButtonModule,
+    MatFormFieldModule,
+    MatTabsModule,
+    MatInputModule,
     HttpClientModule
   ],
   providers: [

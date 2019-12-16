@@ -1,0 +1,10 @@
+@import './../../app-variables.scss';
+
+mat-card {
+  &.medium-load > mat-card-title {
+    background-color: $warn;
+  }
+  &.high-load > mat-card-title {
+    background-color: $error;
+  }
+}

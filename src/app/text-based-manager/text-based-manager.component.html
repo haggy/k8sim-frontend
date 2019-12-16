@@ -1,13 +1,65 @@
+<mat-tab-group>
+  <mat-tab label="Simulation">
+    <mat-card>
+      <mat-card-content>
+        <input matInput required="true" placeholder="Simulation Name">
+      </mat-card-content>
+      <mat-card-actions>
+        <button mat-raised-button (click)="createSimulation()" >Create Simulation</button>
+      </mat-card-actions>
+    </mat-card>
+  </mat-tab>
+  <mat-tab label="Pod">
+    <mat-card>
+      <mat-card-content>
+        <mat-tab-group>
+          <mat-tab label="Pod Info">
+            <mat-form-field>
+              <input matInput required="true" placeholder="Pod Name">
+            </mat-form-field>
+          </mat-tab>
+          <mat-tab label="Disk">
+            <mat-form-field>
+              <input matInput required="false" placeholder="Max IOPS">
+            </mat-form-field>
+          </mat-tab>
+        </mat-tab-group>
+      </mat-card-content>
+      <mat-card-actions>
+        <button mat-raised-button (click)="createPod()" >Create Pod</button>
+      </mat-card-actions>
+    </mat-card>
+  </mat-tab>
+  <mat-tab label="Workload">
+    <mat-card>
+      <mat-card-content>
+        <input matInput required="true" placeholder="Workload Name">
+      </mat-card-content>
+      <mat-card-actions>
+        <button mat-raised-button (click)="createWorkload()" >Create Workload</button>
+      </mat-card-actions>
+    </mat-card>
+  </mat-tab>
+</mat-tab-group>
 <mat-grid-list cols="12">
   <mat-grid-tile [colspan]="12">
-    <mat-grid-tile-header>{{ simulationId ? 'Simulation (' + simulationId + ')' : 'Creating Simulation...'}}</mat-grid-tile-header>
+    <mat-grid-tile-header>{{ simulation ? 'Simulation (' + simulation.id + ')' : 'Creating Simulation...'}}</mat-grid-tile-header>
   </mat-grid-tile>
   <mat-grid-tile 
     *ngFor="let workload of workloads"
-    [colspan]="6">
-    <mat-card>
-      <mat-card-header>Workload ({{ workload.id }})</mat-card-header>
-      <mat-card-content>Running workload...</mat-card-content>
+    [colspan]="6"
+    [rowspan]="3">
+    <mat-card class="{{ workload.styleClass }}">
+      <mat-card-title>Workload ({{ workload.meta.id }})</mat-card-title>
+      <mat-card-content *ngIf="!workload.stats" >Waiting for stats...</mat-card-content>
+      <mat-card-content *ngIf="workload.stats">
+        <div><span>Total: {{ workload.stats.lastStats.storage.total }}</span></div>
+        <div><span>Read (success/fail): {{ workload.stats.lastStats.storage.readSuccess + '/' + workload.stats.lastStats.storage.readFailure }}</span></div>
+        <div><span>Write (success/fail): {{ workload.stats.lastStats.storage.writeSuccess + '/' + workload.stats.lastStats.storage.writeFailure }}</span></div>
+      </mat-card-content>
+      <mat-card-actions>
+        <button mat-raised-button (click)="terminateWorkload(simulation.id, pod.id, workload)" >Terminate</button>
+      </mat-card-actions>
     </mat-card>
   </mat-grid-tile>
 </mat-grid-list>
