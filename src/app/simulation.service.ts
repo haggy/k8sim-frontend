@@ -45,9 +45,10 @@ export class SimulationService {
 }
 
 export type SimMeta = { id: string };
-export type PodMeta = { id: string };
+export type PodMeta = { id: string, name: string };
 export type WorkloadMeta = { id: string };
 export type PodConfig = {
+  name: string,
   subsystemManagerConfig: {
    disk: {
      processingFrequency: {

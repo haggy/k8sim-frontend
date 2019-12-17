@@ -12,18 +12,26 @@
   <mat-tab label="Pod">
     <mat-card>
       <mat-card-content>
-        <mat-tab-group>
-          <mat-tab label="Pod Info">
-            <mat-form-field>
-              <input matInput required="true" placeholder="Pod Name">
-            </mat-form-field>
-          </mat-tab>
-          <mat-tab label="Disk">
-            <mat-form-field>
-              <input matInput required="false" placeholder="Max IOPS">
-            </mat-form-field>
-          </mat-tab>
-        </mat-tab-group>
+        <form [formGroup]="podForm">
+          <mat-tab-group class="pod-meta-tab">
+            <mat-tab label="Pod Info">
+              <mat-form-field>
+                <input matInput placeholder="Pod Name" formControlName="name">
+              </mat-form-field>
+            </mat-tab>
+            <mat-tab label="Disk">
+              <mat-form-field>
+                <input matInput placeholder="Max IOPS" formControlName="maxIOPS">
+              </mat-form-field>
+              <mat-form-field>
+                <input matInput placeholder="Read Cost" formControlName="storageReadCost">
+              </mat-form-field>
+              <mat-form-field>
+                <input matInput placeholder="Write Cost" formControlName="storageWriteCost">
+              </mat-form-field>
+            </mat-tab>
+          </mat-tab-group>
+        </form>
       </mat-card-content>
       <mat-card-actions>
         <button mat-raised-button (click)="createPod()" >Create Pod</button>
@@ -45,21 +53,46 @@
   <mat-grid-tile [colspan]="12">
     <mat-grid-tile-header>{{ simulation ? 'Simulation (' + simulation.id + ')' : 'Creating Simulation...'}}</mat-grid-tile-header>
   </mat-grid-tile>
-  <mat-grid-tile 
-    *ngFor="let workload of workloads"
-    [colspan]="6"
-    [rowspan]="3">
-    <mat-card class="{{ workload.styleClass }}">
-      <mat-card-title>Workload ({{ workload.meta.id }})</mat-card-title>
-      <mat-card-content *ngIf="!workload.stats" >Waiting for stats...</mat-card-content>
-      <mat-card-content *ngIf="workload.stats">
-        <div><span>Total: {{ workload.stats.lastStats.storage.total }}</span></div>
-        <div><span>Read (success/fail): {{ workload.stats.lastStats.storage.readSuccess + '/' + workload.stats.lastStats.storage.readFailure }}</span></div>
-        <div><span>Write (success/fail): {{ workload.stats.lastStats.storage.writeSuccess + '/' + workload.stats.lastStats.storage.writeFailure }}</span></div>
-      </mat-card-content>
-      <mat-card-actions>
-        <button mat-raised-button (click)="terminateWorkload(simulation.id, pod.id, workload)" >Terminate</button>
-      </mat-card-actions>
-    </mat-card>
-  </mat-grid-tile>
+  <ng-container *ngIf="!podInFocus">
+    <mat-grid-tile 
+      class="pod-list-item"
+      *ngFor="let pod of pods"
+      [colspan]="4"
+      [rowspan]="3">
+      <mat-card class="{{ pod.styleClass }}">
+        <mat-card-title>Pod ({{ pod.meta.name }})</mat-card-title>
+        <mat-card-content>
+          <div><span>Workloads: {{ pod.workloads.length }}</span></div>
+          <div><span>Storage Errors: {{ pod.stats.avgStorageError.toFixed(1) }}%</span></div>
+        </mat-card-content>
+        <mat-card-actions>
+          <button mat-raised-button (click)="viewWorkloads(pod)" >View</button>
+          <button mat-raised-button (click)="terminatePod(pod)" >Terminate</button>
+        </mat-card-actions>
+      </mat-card>
+    </mat-grid-tile>
+  </ng-container>
+  <ng-container *ngIf="podInFocus">
+    <mat-grid-tile [colspan]="12" [rowspan]="1">
+      <button mat-raised-button (click)="viewPods()">Back to Pods</button>
+    </mat-grid-tile>
+    <mat-grid-tile 
+      class="workload-list-item"
+      *ngFor="let workload of podInFocus.workloads"
+      [colspan]="6"
+      [rowspan]="3">
+      <mat-card class="{{ workload.styleClass }}">
+        <mat-card-title>Workload ({{ workload.meta.id }})</mat-card-title>
+        <mat-card-content *ngIf="!workload.stats" >Waiting for stats...</mat-card-content>
+        <mat-card-content *ngIf="workload.stats">
+          <div><span>Total: {{ workload.stats.lastStats.storage.total }}</span></div>
+          <div><span>Read (success/fail): {{ workload.stats.lastStats.storage.readSuccess + '/' + workload.stats.lastStats.storage.readFailure }}</span></div>
+          <div><span>Write (success/fail): {{ workload.stats.lastStats.storage.writeSuccess + '/' + workload.stats.lastStats.storage.writeFailure }}</span></div>
+        </mat-card-content>
+        <mat-card-actions>
+          <button mat-raised-button (click)="terminateWorkload(workload)" >Terminate</button>
+        </mat-card-actions>
+      </mat-card>
+    </mat-grid-tile>
+  </ng-container>
 </mat-grid-list>

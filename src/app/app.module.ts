@@ -15,6 +15,7 @@ import {MatToolbarModule, MatTabsModule, MatInputModule} from '@angular/material
 import {MatListModule} from '@angular/material';
 import { MatSliderModule } from '@angular/material';
 import {MatSidenavModule, MatButtonModule, MatFormFieldModule} from '@angular/material';
+import { FormsModule, ReactiveFormsModule, FormBuilder } from '@angular/forms';
 
 @NgModule({
   declarations: [
@@ -23,6 +24,8 @@ import {MatSidenavModule, MatButtonModule, MatFormFieldModule} from '@angular/ma
   ],
   imports: [
     BrowserModule,
+    FormsModule,
+    ReactiveFormsModule,
     AppRoutingModule,
     NoopAnimationsModule,
     MatGridListModule,

@@ -8,3 +8,14 @@ mat-card {
     background-color: $error;
   }
 }
+
+.align-left {
+  display: flex;
+  justify-content: flex-end;
+}
+
+mat-tab-group.pod-meta-tab {
+  mat-form-field {
+    padding: 10px;
+  }
+}
