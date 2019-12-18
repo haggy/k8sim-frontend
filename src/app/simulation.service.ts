@@ -33,9 +33,9 @@ export class SimulationService {
     );
   }
 
-  stopWorkload(simId: string, podId: string, workloadId: string): Observable<void> {
+  stopWorkload(simId: string, podId: string, workloadGroupId: string, workloadId: string): Observable<void> {
     return this.http.delete<void>(
-      `${this.baseUrl}/simulation/${simId}/pod/${podId}/workload/${workloadId}`
+      `${this.baseUrl}/simulation/${simId}/pod/${podId}/wlgroup/${workloadGroupId}/wl/${workloadId}`
     );
   }
 
@@ -46,7 +46,7 @@ export class SimulationService {
 
 export type SimMeta = { id: string };
 export type PodMeta = { id: string, name: string };
-export type WorkloadMeta = { id: string };
+export type WorkloadMeta = { id: string, groupRoleName: string };
 export type PodConfig = {
   name: string,
   subsystemManagerConfig: {
@@ -66,6 +66,10 @@ export type PodConfig = {
    tickInterval: string
   }
 };
+export type WorkloadGroupConfig = {
+  groupRoleName: string, 
+  numContainers: number
+};
 
 export class NewSimulationReq {
   constructor() {}
@@ -83,10 +87,10 @@ export class NewPodResp {
 }
 
 export class NewWorkloadReq {
-  constructor(public workload: {}) {}
+  constructor(public workloadGroup: WorkloadGroupConfig) {}
 }
 export class NewWorkloadResp {
-  constructor(public meta: WorkloadMeta) {}
+  constructor(public meta: WorkloadMeta, public workloadIds: string[]) {}
 }
 
 export class StorageStats {

@@ -19,7 +19,7 @@
                 <input matInput placeholder="Pod Name" formControlName="name">
               </mat-form-field>
             </mat-tab>
-            <mat-tab label="Disk">
+            <mat-tab label="Storage">
               <mat-form-field>
                 <input matInput placeholder="Max IOPS" formControlName="maxIOPS">
               </mat-form-field>
@@ -28,6 +28,9 @@
               </mat-form-field>
               <mat-form-field>
                 <input matInput placeholder="Write Cost" formControlName="storageWriteCost">
+              </mat-form-field>
+              <mat-form-field>
+                <input matInput placeholder="Queue Capacity" formControlName="storageQueueCapacity">
               </mat-form-field>
             </mat-tab>
           </mat-tab-group>
@@ -41,7 +44,32 @@
   <mat-tab label="Workload">
     <mat-card>
       <mat-card-content>
-        <input matInput required="true" placeholder="Workload Name">
+        <form [formGroup]="workloadGroupForm">
+          <mat-tab-group class="pod-meta-tab">
+            <mat-tab label="Workload Group Info">
+              <mat-form-field>
+                <input matInput placeholder="Name/Role (unique)" formControlName="groupName">
+              </mat-form-field>
+              <mat-form-field>
+                <input matInput placeholder="Number of Containers" formControlName="numContainers">
+              </mat-form-field>
+            </mat-tab>
+            <mat-tab label="Storage">
+              <!-- <mat-form-field>
+                <input matInput placeholder="Max IOPS" formControlName="maxIOPS">
+              </mat-form-field>
+              <mat-form-field>
+                <input matInput placeholder="Read Cost" formControlName="storageReadCost">
+              </mat-form-field>
+              <mat-form-field>
+                <input matInput placeholder="Write Cost" formControlName="storageWriteCost">
+              </mat-form-field>
+              <mat-form-field>
+                <input matInput placeholder="Queue Capacity" formControlName="storageQueueCapacity">
+              </mat-form-field> -->
+            </mat-tab>
+          </mat-tab-group>
+        </form>
       </mat-card-content>
       <mat-card-actions>
         <button mat-raised-button (click)="createWorkload()" >Create Workload</button>
@@ -62,27 +90,49 @@
       <mat-card class="{{ pod.styleClass }}">
         <mat-card-title>Pod ({{ pod.meta.name }})</mat-card-title>
         <mat-card-content>
-          <div><span>Workloads: {{ pod.workloads.length }}</span></div>
+          <div><span>Workloads: {{ pod.workloadCount() }}</span></div>
           <div><span>Storage Errors: {{ pod.stats.avgStorageError.toFixed(1) }}%</span></div>
         </mat-card-content>
         <mat-card-actions>
-          <button mat-raised-button (click)="viewWorkloads(pod)" >View</button>
+          <button mat-raised-button (click)="viewPod(pod)" >View</button>
           <button mat-raised-button (click)="terminatePod(pod)" >Terminate</button>
         </mat-card-actions>
       </mat-card>
     </mat-grid-tile>
   </ng-container>
-  <ng-container *ngIf="podInFocus">
+  <ng-container *ngIf="podInFocus && !workloadGroupInFocus">
     <mat-grid-tile [colspan]="12" [rowspan]="1">
       <button mat-raised-button (click)="viewPods()">Back to Pods</button>
     </mat-grid-tile>
     <mat-grid-tile 
-      class="workload-list-item"
-      *ngFor="let workload of podInFocus.workloads"
+      class="workload-group-list-item"
+      *ngFor="let workloadGroup of podInFocus.workloadGroups"
+      [colspan]="6"
+      [rowspan]="3">
+      <mat-card class="{{ workloadGroup.styleClass }}">
+        <mat-card-title>Workload ({{ workloadGroup.name }})</mat-card-title>
+        <mat-card-content *ngIf="!workloadGroup.stats" >Waiting for stats...</mat-card-content>
+        <mat-card-content *ngIf="workloadGroup.stats">
+          <div><span>Workloads: {{ workloadGroup.workloadCount() }}</span></div>
+          <div><span>Storage Errors: {{ workloadGroup.stats.avgStorageError.toFixed(1) }}%</span></div>
+        </mat-card-content>
+        <mat-card-actions>
+          <button mat-raised-button (click)="viewWorkloadGroup(workloadGroup)" >View</button>
+          <button mat-raised-button (click)="terminateGroup(workloadGroup)" >Terminate</button>
+        </mat-card-actions>
+      </mat-card>
+    </mat-grid-tile>
+  </ng-container>
+  <ng-container *ngIf="podInFocus && workloadGroupInFocus">
+    <mat-grid-tile [colspan]="12" [rowspan]="1">
+      <button mat-raised-button (click)="viewWorkloadGroups()">Back to Workload Groups</button>
+    </mat-grid-tile>
+    <mat-grid-tile
+      *ngFor="let workload of workloadGroupInFocus.workloads"
       [colspan]="6"
       [rowspan]="3">
       <mat-card class="{{ workload.styleClass }}">
-        <mat-card-title>Workload ({{ workload.meta.id }})</mat-card-title>
+        <mat-card-title>Workload ({{ workload.id }})</mat-card-title>
         <mat-card-content *ngIf="!workload.stats" >Waiting for stats...</mat-card-content>
         <mat-card-content *ngIf="workload.stats">
           <div><span>Total: {{ workload.stats.lastStats.storage.total }}</span></div>
