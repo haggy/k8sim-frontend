@@ -1,5 +1,5 @@
 <mat-tab-group>
-  <mat-tab label="Simulation">
+  <mat-tab label="Simulation" isActive="activeTab === 'sim'">
     <mat-card>
       <mat-card-content>
         <input matInput required="true" placeholder="Simulation Name">
@@ -9,7 +9,7 @@
       </mat-card-actions>
     </mat-card>
   </mat-tab>
-  <mat-tab label="Pod">
+  <mat-tab label="Pod" disabled="{{ !simulation }}" isActive="activeTab === 'pod'">
     <mat-card>
       <mat-card-content>
         <form [formGroup]="podForm">
@@ -41,7 +41,7 @@
       </mat-card-actions>
     </mat-card>
   </mat-tab>
-  <mat-tab label="Workload">
+  <mat-tab label="Workload Group" disabled="{{ !podInFocus }}" isActive="activeTab === 'wlg'">
     <mat-card>
       <mat-card-content>
         <form [formGroup]="workloadGroupForm">
@@ -110,7 +110,7 @@
       [colspan]="6"
       [rowspan]="3">
       <mat-card class="{{ workloadGroup.styleClass }}">
-        <mat-card-title>Workload ({{ workloadGroup.name }})</mat-card-title>
+        <mat-card-title>Group ({{ workloadGroup.name }})</mat-card-title>
         <mat-card-content *ngIf="!workloadGroup.stats" >Waiting for stats...</mat-card-content>
         <mat-card-content *ngIf="workloadGroup.stats">
           <div><span>Workloads: {{ workloadGroup.workloadCount() }}</span></div>

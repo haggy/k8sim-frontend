@@ -30,6 +30,7 @@ export class TextBasedManagerComponent implements OnInit {
   podInFocus: Pod | undefined;
   workloadGroupInFocus: WorkloadGroup | undefined;
   private statsIntervalId;
+  activeTab: string = 'sim';
 
   private podFormStates = {
     name: '',
@@ -156,6 +157,7 @@ export class TextBasedManagerComponent implements OnInit {
 
   viewPod(pod: Pod) {
     this.podInFocus = pod;
+    this.activeTab = 'wlg';
   }
 
   viewWorkloadGroup(wlg: WorkloadGroup) {
@@ -172,6 +174,7 @@ export class TextBasedManagerComponent implements OnInit {
 
   viewPods() {
     this.podInFocus = null;
+    this.activeTab = 'pod';
   }
 
   viewWorkloadGroups() {
